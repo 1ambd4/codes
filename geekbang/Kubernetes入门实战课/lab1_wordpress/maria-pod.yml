@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: maria-pod
+  labels:
+    app: wordpress
+    role: database
+
+spec:
+  containers:
+  - image: mariadb:10
+    name: maria
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 3306
+
+    # ConfigMap里的数据比较多，env.valueFrom一条条导入很慢，且易出错
+    # 因而使用envFrom一次性把ConfigMap里的字段全部导入Pod
+    # 并且可以指定前缀
+    envFrom:
+    - prefix: 'MARIADB_'
+      configMapRef:
+        name: maria-cm
